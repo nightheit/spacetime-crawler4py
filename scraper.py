@@ -1,5 +1,6 @@
 import re
-from urllib.parse import urlparse
+from bs4 import BeautifulSoup
+from urllib.parse import urlparse, urldefrag, urljoin
 
 def scraper(url, resp):
     links = extract_next_links(url, resp)
@@ -15,8 +16,28 @@ def extract_next_links(url, resp):
     #         resp.raw_response.url: the url, again
     #         resp.raw_response.content: the content of the page!
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
+
+    if (not (200 <= resp.status < 300)) or (not resp.raw_response.content):
+        return []
     
-    return list()
+    # parse the html with beautiful soup into bs4 object
+    parsed_html = BeautifulSoup(resp.raw_response.content, "lxml")
+
+    # from bs4 object find all a tags that has href in it
+    all_a_tags = parsed_html.find_all("a", href=True)
+    list_of_next_urls = []
+
+    # no need for url validation checking, that is done in scraper.py
+    # urljoin ensures the whole url is returned since urls within a href's can vary
+    # urldefrag removes the fragment at the end of the url if it exists
+    for link in all_a_tags:
+        href_url = link["href"]
+        full_url = urljoin(resp.url, href_url)[0]
+        clean_url = urldefrag(full_url)
+        list_of_next_urls.append(clean_url)
+    
+    return list_of_next_urls
+
 
 def is_valid(url):
     # Decide whether to crawl this url or not. 
