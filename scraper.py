@@ -2,10 +2,37 @@ import re
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urldefrag, urljoin
 
+already_visited = set()
+current_prefix_depth = {}
+blacklisted_tags = {
+    "script",
+    "style",
+    "head",
+    "meta",
+    "title",
+    "link",
+    "noscript",
+    "nav",
+    "header",
+    "footer",
+    "aside",
+    "form",
+    "input",
+    "button",
+    "select",
+    "textarea",
+    "option",
+    "svg",
+    "canvas",
+    "iframe",
+    "object",
+    "embed"
+}
+
 def scraper(url, resp):
     links = extract_next_links(url, resp)
-    for link in links:
-        print(f"{link}, {is_valid(link)}")
+    # for link in links:
+    #     print(f"{link}, {is_valid(link)}")
     return [link for link in links if is_valid(link)]
 
 def extract_next_links(url, resp):
@@ -25,6 +52,19 @@ def extract_next_links(url, resp):
     # parse the html with beautiful soup into bs4 object
     parsed_html = BeautifulSoup(resp.raw_response.content, "lxml")
 
+    # exclude text within blacklisted tags, only want raw text
+    for blacklist_tag in parsed_html(blacklisted_tags):
+        blacklist_tag.decompose()
+
+    text = parsed_html.get_text(separator=" ", strip=True)
+    with open("test_text.txt", "a", encoding="utf-8") as f:
+        # a clear separator with the URL
+        f.write("\n" + "="*80 + "\n")
+        f.write(f"URL: {url}\n")
+        f.write("="*80 + "\n\n")
+        # the page’s text
+        f.write(text + "\n\n")
+
     # from bs4 object find all a tags that has href in it
     all_a_tags = parsed_html.find_all("a", href=True)
     list_of_next_urls = []
@@ -38,6 +78,8 @@ def extract_next_links(url, resp):
         clean_url, _ = urldefrag(full_url)
         list_of_next_urls.append(clean_url)
     
+    # 
+    
     return list_of_next_urls
 
 
@@ -47,9 +89,30 @@ def is_valid(url):
     # There are already some conditions that return False.
     try:
         parsed = urlparse(url)
+
+        if parsed in already_visited:
+            return False
+
+        domain = parsed.netloc.lower()
+        path = parsed.path or '/'
+
+        valid_domain = (
+        domain.endswith(".ics.uci.edu")
+        or domain.endswith(".cs.uci.edu")
+        or domain.endswith(".informatics.uci.edu")
+        or domain.endswith(".stat.uci.edu")
+        or (domain == "today.uci.edu"
+            and path.startswith("/department/information_computer_sciences/"))
+        )
+
+        if not valid_domain:
+            return False
+
         if parsed.scheme not in set(["http", "https"]):
             return False
-        return not re.match(
+        
+        # should be the last check
+        if (re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
             + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
@@ -57,7 +120,10 @@ def is_valid(url):
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
             + r"|thmx|mso|arff|rtf|jar|csv"
-            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower())
+            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower())):
+            return False
+        already_visited.add(parsed)
+        return True
 
     except TypeError:
         print ("TypeError for ", parsed)
