@@ -32,8 +32,8 @@ def extract_next_links(url, resp):
     # urldefrag removes the fragment at the end of the url if it exists
     for link in all_a_tags:
         href_url = link["href"]
-        full_url = urljoin(resp.url, href_url)[0]
-        clean_url = urldefrag(full_url)
+        full_url = urljoin(resp.url, href_url)
+        clean_url, _ = urldefrag(full_url)
         list_of_next_urls.append(clean_url)
     
     return list_of_next_urls
