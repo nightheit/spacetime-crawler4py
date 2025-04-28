@@ -86,4 +86,5 @@ if __name__ == "__main__":
     print(freq2)
     print()
     print(freq+freq2)
-    
+    freq3 = freq+freq2
+    print(freq3.total())
