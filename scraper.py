@@ -4,6 +4,8 @@ from urllib.parse import urlparse, urldefrag, urljoin
 
 def scraper(url, resp):
     links = extract_next_links(url, resp)
+    for link in links:
+        print(f"{link}, {is_valid(link)}")
     return [link for link in links if is_valid(link)]
 
 def extract_next_links(url, resp):
