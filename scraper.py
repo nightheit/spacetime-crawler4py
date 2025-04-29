@@ -1,9 +1,9 @@
 import re
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse, urldefrag, urljoin
+from urllib.parse import urlparse, urldefrag
+from helpers import is_too_similar, tokenize, computeWordFrequencies
 
 already_visited = set()
-current_prefix_depth = {}
 blacklisted_tags = {
     "script",
     "style",
@@ -49,49 +49,60 @@ def extract_next_links(url, resp):
     if (not (200 <= resp.status < 300)) or (not resp.raw_response.content):
         return []
     
-    # parse the html with beautiful soup into bs4 object
-    parsed_html = BeautifulSoup(resp.raw_response.content, "lxml")
+    # try to parse with bs4, if can't assume bad site and return []
+    try:
+        parsed_html = BeautifulSoup(resp.raw_response.content, "lxml")
 
-    # exclude text within blacklisted tags, only want raw text
-    for blacklist_tag in parsed_html(blacklisted_tags):
-        blacklist_tag.decompose()
+        # exclude text within blacklisted tags, only want raw text
+        for blacklist_tag in parsed_html(blacklisted_tags):
+            blacklist_tag.decompose()
 
-    text = parsed_html.get_text(separator=" ", strip=True)
-    with open("test_text.txt", "a", encoding="utf-8") as f:
-        # a clear separator with the URL
-        f.write("\n" + "="*80 + "\n")
-        f.write(f"URL: {url}\n")
-        f.write("="*80 + "\n\n")
-        # the page’s text
-        f.write(text + "\n\n")
+        # process text from the site
+        text = parsed_html.get_text(separator=" ", strip=True)
+        tokens = tokenize(text)
+        token_dict = computeWordFrequencies(tokens)
 
-    # from bs4 object find all a tags that has href in it
-    all_a_tags = parsed_html.find_all("a", href=True)
-    list_of_next_urls = []
+        # skip pages with 200 status but no information
+        if len(token_dict) <= 10:
+            return []
+        
+        # if the current text is similar to 3+ other fingerprints, dont add urls
+        if is_too_similar(url, tokens) >= 3:
+            return []
+        
+        # only add text to report with token count to unique token ratio (informational value) 0.2 or higher
+        # informational_value = len(token_dict) / len(tokens)
+        # if informational_value >= 0.2:
+            # report stuff
 
-    # no need for url validation checking, that is done in scraper.py
-    # urljoin ensures the whole url is returned since urls within a href's can vary
-    # urldefrag removes the fragment at the end of the url if it exists
-    for link in all_a_tags:
-        href_url = link["href"]
-        full_url = urljoin(resp.url, href_url)
-        clean_url, _ = urldefrag(full_url)
-        list_of_next_urls.append(clean_url)
-    
-    # 
-    
-    return list_of_next_urls
+        
+        # get all urls on the current page
+        all_a_tags = parsed_html.find_all("a", href=True)
+        list_of_next_urls = []
 
+        # url normalization
+        for link in all_a_tags:
+            href_url = link["href"]
+            full_url = urljoin(resp.url, href_url)
+            clean_url, _ = urldefrag(full_url)
+            list_of_next_urls.append(clean_url)
+
+        # remove potential duplicates to avoid unnecessary clutter
+        list_of_next_urls = list(set(list_of_next_urls))
+        return list_of_next_urls
+    except Exception:
+        return []
 
 def is_valid(url):
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
     try:
-        parsed = urlparse(url)
-
-        if parsed in already_visited:
+        if url in already_visited:
             return False
+        
+        already_visited.add(url)
+        parsed = urlparse(url)
 
         domain = parsed.netloc.lower()
         path = parsed.path or '/'
@@ -101,14 +112,22 @@ def is_valid(url):
         or domain.endswith(".cs.uci.edu")
         or domain.endswith(".informatics.uci.edu")
         or domain.endswith(".stat.uci.edu")
-        or (domain == "today.uci.edu"
-            and path.startswith("/department/information_computer_sciences/"))
+        or (domain == "today.uci.edu" and path.startswith("/department/information_computer_sciences/"))
         )
 
         if not valid_domain:
             return False
 
         if parsed.scheme not in set(["http", "https"]):
+            return False
+        
+        # do not include urls with filter query parameters to avoid infinite trap
+        query_params = parse_qs(parsed.query)
+        if any("filter" in query.lower() for query in query_params):
+            return False
+        
+        # dont allow urls with more than 2 query parameters, possible trap
+        if parsed.query and parsed.query.count("&") > 2:
             return False
         
         # should be the last check
@@ -122,7 +141,7 @@ def is_valid(url):
             + r"|thmx|mso|arff|rtf|jar|csv"
             + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower())):
             return False
-        already_visited.add(parsed)
+        
         return True
 
     except TypeError:
