@@ -19,3 +19,20 @@ def download(url, config, logger=None):
         "error": f"Spacetime Response error {resp} with url {url}.",
         "status": resp.status_code,
         "url": url})
+
+#### temporary workaround to search real web, delete before testing
+# import pickle
+# def download(url, config, logger=None):
+#     try:
+#         resp = requests.get(url)
+#     except requests.exceptions.RequestException as e:
+#         return Response({
+#             "url":   url,
+#             "status": 603,
+#             "error": str(e)
+#         })
+#     return Response({
+#         "url":    url,
+#         "status": resp.status_code,
+#         "response": pickle.dumps(resp)
+#     })

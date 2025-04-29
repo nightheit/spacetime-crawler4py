@@ -1,6 +1,6 @@
 import re
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse, urldefrag
+from urllib.parse import urlparse, urldefrag, parse_qs, urljoin
 from helpers import is_too_similar, tokenize, computeWordFrequencies
 
 already_visited = set()
@@ -90,7 +90,8 @@ def extract_next_links(url, resp):
         # remove potential duplicates to avoid unnecessary clutter
         list_of_next_urls = list(set(list_of_next_urls))
         return list_of_next_urls
-    except Exception:
+    except Exception as e:
+        print("General Exception", e.name)
         return []
 
 def is_valid(url):
@@ -108,26 +109,30 @@ def is_valid(url):
         path = parsed.path or '/'
 
         valid_domain = (
-        domain.endswith(".ics.uci.edu")
-        or domain.endswith(".cs.uci.edu")
-        or domain.endswith(".informatics.uci.edu")
-        or domain.endswith(".stat.uci.edu")
+        domain.endswith("ics.uci.edu")
+        or domain.endswith("cs.uci.edu")
+        or domain.endswith("informatics.uci.edu")
+        or domain.endswith("stat.uci.edu")
         or (domain == "today.uci.edu" and path.startswith("/department/information_computer_sciences/"))
         )
 
         if not valid_domain:
+            # print("Invalid Domain",domain)
             return False
 
         if parsed.scheme not in set(["http", "https"]):
+            # print("Not HTTP")
             return False
         
         # do not include urls with filter query parameters to avoid infinite trap
         query_params = parse_qs(parsed.query)
         if any("filter" in query.lower() for query in query_params):
+            # print("FILTER")
             return False
         
         # dont allow urls with more than 2 query parameters, possible trap
         if parsed.query and parsed.query.count("&") > 2:
+            # print("Too many queries")
             return False
         
         # should be the last check
