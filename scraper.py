@@ -1,7 +1,17 @@
 import re
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urldefrag, parse_qs, urljoin
-from helpers import is_too_similar, tokenize, computeWordFrequencies
+from helpers import is_too_similar, tokenize, computeWordFrequencies, stop_words
+from collections import Counter, defaultdict
+
+unique_pages = set()
+global_word_freq = Counter()
+subdomain_page_sets = defaultdict(set)
+longest_page = {
+    "url":    None,
+    "length": 0
+}
+pages_since_report = 0
 
 already_visited = set()
 blacklisted_tags = {
@@ -63,7 +73,12 @@ def extract_next_links(url, resp):
         token_dict = computeWordFrequencies(tokens)
 
         # skip pages with 200 status but no information
-        if len(token_dict) <= 10:
+        if len(token_dict) <= 20 or len(tokens) <= 50:
+            return []
+        
+        # avoid sites with high link to token density to avoid gallery like sites
+        link_count = len(parsed_html.find_all("a", href=True))
+        if link_count / max(len(tokens), 1) > 0.3:
             return []
         
         # if the current text is similar to 3+ other fingerprints, dont add urls
@@ -71,12 +86,29 @@ def extract_next_links(url, resp):
             return []
         
         # only add text to report with token count to unique token ratio (informational value) 0.2 or higher
-        # informational_value = len(token_dict) / len(tokens)
-        # if informational_value >= 0.2:
-            # report stuff
+        informational_value = len(token_dict) / len(tokens)
+        if informational_value >= 0.2:
+            clean_url, _ = urldefrag(resp.url)
+            unique_pages.add(clean_url)
 
-        
-        # get all urls on the current page
+            page_word_count = sum(token_dict.values())
+            if page_word_count > longest_page["length"]:
+                longest_page["length"] = page_word_count
+                longest_page["url"]    = clean_url
+
+            global_word_freq.update(token_dict)
+
+            domain = urlparse(resp.url).netloc.lower()
+            if domain.endswith("uci.edu"):
+                subdomain_page_sets[domain].add(clean_url)
+
+            global pages_since_report
+            pages_since_report += 1
+            print(pages_since_report)
+            if pages_since_report >= 50:
+                write_report()
+                pages_since_report = 0
+
         all_a_tags = parsed_html.find_all("a", href=True)
         list_of_next_urls = []
 
@@ -94,6 +126,21 @@ def extract_next_links(url, resp):
         print("General Exception", e.name)
         return []
 
+def write_report():
+    lines = []
+    lines.append(f"Total unique pages: {len(unique_pages)}\n")
+    lines.append(f"Longest page: {longest_page['url']} "
+                 f"({longest_page['length']} words)\n\n")
+    lines.append("Top 50 most common words:\n")
+    for word, freq in global_word_freq.most_common(50):
+        lines.append(f"{word}: {freq}\n")
+    lines.append("\nSubdomain counts:\n")
+    for subd in sorted(subdomain_page_sets):
+        lines.append(f"{subd}, {len(subdomain_page_sets[subd])}\n")
+
+    with open("crawl_report.txt", "w") as report:
+        report.writelines(lines)
+
 def is_valid(url):
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
@@ -107,6 +154,9 @@ def is_valid(url):
 
         domain = parsed.netloc.lower()
         path = parsed.path or '/'
+
+        if domain == "grape.ics.uci.edu":
+            return False
 
         valid_domain = (
         domain.endswith("ics.uci.edu")

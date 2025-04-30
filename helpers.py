@@ -20,12 +20,13 @@ stop_words = {
     "with", "won't", "would", "wouldn't", "you", "you'd", "you'll", "you're", "you've", "your", "yours", "yourself", "yourselves"
 }
 
+english_letters = set(string.ascii_letters + string.digits + "'")
+
 # string.ascii_letters allows for tokenization on only alphanumeric English letters and string.digits allows for numbers 0-9. 
 # Non English letters are treated as separators
 # Source: https://stackoverflow.com/questions/16060899/alphabet-range-in-python
 
 def tokenize(text: str) -> list[str]:
-    english_letters = set(string.ascii_letters + string.digits + "'")
     tokenList = []
     currToken = []
     for character in text:
@@ -36,13 +37,15 @@ def tokenize(text: str) -> list[str]:
             # if the next char is invalid, save currToken, reset it, and continue
             if currToken:
                 token = ''.join(currToken)
-                if token not in stop_words:
-                    tokenList.append(token.lower())
+                token = token.lower()
+                if token not in stop_words and len(token) > 1 and not token.isdigit():
+                    tokenList.append(token)
                 currToken = []
     if currToken:
         token = ''.join(currToken)
-        if token not in stop_words:
-            tokenList.append(token.lower())
+        if token not in stop_words and len(token) > 1 and not token.isdigit():
+            token = token.lower()
+            tokenList.append(token)
         currToken = []
     return tokenList
 
