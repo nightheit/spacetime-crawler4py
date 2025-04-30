@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urldefrag, parse_qs, urljoin
 from helpers import is_too_similar, tokenize, computeWordFrequencies, stop_words
 from collections import Counter, defaultdict
+from report import Report
 
 unique_pages = set()
 global_word_freq = Counter()
@@ -126,7 +127,7 @@ def extract_next_links(url, resp):
         print("General Exception", e.name)
         return []
 
-def write_report():
+def write_report(): ############################################################################
     lines = []
     lines.append(f"Total unique pages: {len(unique_pages)}\n")
     lines.append(f"Longest page: {longest_page['url']} "
