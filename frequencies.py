@@ -56,7 +56,7 @@ class Frequencies:
                 ret+=self.freqs[key]
         return ret
     def top(self, num:int):
-        keyorder = sorted(sorted([k for k in self.freqs if not k.data in STOPWORDS],key = lambda k: k.data), key = (lambda k: self.freqs[k]),reverse=True)
+        keyorder = sorted(sorted([k for k in self.freqs if not (k.data in STOPWORDS or k.data.isdigit())],key = lambda k: k.data), key = (lambda k: self.freqs[k]),reverse=True)
         return "\n".join([f"{k} -> {self.freqs[k]}" for k in keyorder][0:num])
 
 

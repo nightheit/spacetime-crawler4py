@@ -18,10 +18,10 @@ class Report:
     def updatemostcommonwords(self, text):
         freqs = computeWordFrequencies(tokenize(text))
         self.allwords = self.allwords+freqs
-    def updatesubdomains(self, subdomain):
+    def updatesubdomains(self, subdomain, url):
         if not subdomain in self.subdomains:
             self.subdomains[subdomain]=set()
-        self.subdomains[subdomain].add(subdomain)
+        self.subdomains[subdomain].add(url)
         
             
     def saveReport(self):

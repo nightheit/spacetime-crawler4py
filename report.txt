@@ -1,125 +1,75 @@
-Total unique pages: 69
-Longest page: http://www.ics.uci.edu/~jutts/8 (1821 words)
+Total unique pages: 114
+Longest page: https://cml.ics.uci.edu/category/aiml (13513 words)
 
 Top 50 most common words:
-2 -> 188
-ics -> 161
-uci -> 158
-3 -> 141
-dbh -> 130
-00 -> 125
-statistics -> 122
-data -> 119
-pm -> 114
-edu -> 110
-will -> 100
-4 -> 95
-1 -> 91
-university -> 91
-hours -> 88
-4011 -> 87
-science -> 85
-22 -> 78
-students -> 77
-professor -> 74
-computer -> 70
-lecture -> 67
-8 -> 64
-s -> 64
-may -> 58
-statistical -> 58
-time -> 56
-career -> 55
-computing -> 54
-algorithm -> 53
-matching -> 53
-can -> 52
-use -> 52
-design -> 51
-2021 -> 50
-0900 -> 49
-research -> 49
-5 -> 46
-9 -> 46
-lab -> 45
-work -> 44
-information -> 43
-problem -> 43
-skip -> 43
-2001 -> 42
-6 -> 42
-mon -> 42
-oct -> 42
-program -> 42
-nov -> 41
+research -> 362
+data -> 348
+learning -> 302
+science -> 270
+uci -> 258
+computer -> 245
+will -> 243
+ics -> 229
+university -> 225
+bam -> 222
+ref_chr19 -> 222
+models -> 203
+systems -> 191
+s -> 177
+ai -> 165
+can -> 156
+information -> 155
+edu -> 148
+machine -> 146
+irvine -> 143
+list -> 133
+language -> 121
+professor -> 121
+pm -> 105
+california -> 101
+also -> 97
+students -> 95
+work -> 95
+bio -> 94
+student -> 94
+events -> 91
+lab -> 90
+view -> 89
+end -> 88
+time -> 88
+department -> 87
+model -> 87
+phd -> 87
+dbh -> 86
+d -> 85
+talk -> 82
+program -> 81
+award -> 80
+group -> 80
+edge -> 79
+isg -> 79
+applications -> 78
+uc -> 78
+t -> 77
+april -> 76
 
 Subdomain counts:
-http://intranet.ics.uci.edu, 1
-http://www.ics.uci.edu/~jutts/8, 1
-http://www.ics.uci.edu/~jutts/GAISE/index.html, 1
-http://www.ics.uci.edu/~jutts/statlinks.html, 1
-http://www.ics.uci.edu/~lab/ethics/ethics.php, 1
-http://www.ics.uci.edu/~lab/ethics/ethics_summary.php, 1
-http://www.ics.uci.edu/~lab/lab_assistants/index.php, 1
-http://www.ics.uci.edu/~lab/lab_schedule/index.php, 1
-http://www.ics.uci.edu/~lab/policies/index.php, 1
-http://www.ics.uci.edu/~lab/policies/labguidelines.php, 1
-http://www.ics.uci.edu/~lab/students/acct_activate.php, 1
-http://www.stat.uci.edu/faculty-directory/jessica-utts, 1
-http://www.stat.uci.edu/faculty-directory/weining-shen, 1
-http://www.stat.uci.edu/faculty/brigitte-baldi, 1
-http://www.stat.uci.edu/faculty/vladimir-minin, 1
-https://acoi.ics.uci.edu/seminar-series, 1
-https://acoi.ics.uci.edu/seminars/a-theory-of-alternating-paths-and-blossoms-from-the-perspective-of-minimum-length, 1
-https://acoi.ics.uci.edu/seminars/capacity-of-neural-networks, 1
-https://acoi.ics.uci.edu/seminars/computational-phase-transition-and-mcmc-algorithms, 1
-https://acoi.ics.uci.edu/seminars/core-stability-in-markets-with-budget-constrained-bidders, 1
-https://acoi.ics.uci.edu/seminars/empirical-welfare-economics, 1
-https://acoi.ics.uci.edu/seminars/formal-verification-of-edmonds-blossom-algorithm, 1
-https://acoi.ics.uci.edu/seminars/fragile-stable-matchings, 1
-https://acoi.ics.uci.edu/seminars/from-adwords-to-online-matching-with-stochastic-rewards-and-back, 1
-https://acoi.ics.uci.edu/seminars/improving-match-rates-in-dating-markets-through-assortment-optimization, 1
-https://acoi.ics.uci.edu/seminars/market-design-problems-competitive-equilibrium-and-stable-allocation, 1
-https://acoi.ics.uci.edu/seminars/matching-is-as-easy-as-the-decision-problem-in-the-nc-model, 1
-https://acoi.ics.uci.edu/seminars/minimum-weight-combinatorial-structures-under-random-cost-constraints, 1
-https://acoi.ics.uci.edu/seminars/new-insights-into-the-classic-shapley-shubik-work-the-core-of-the-matching-game, 1
-https://acoi.ics.uci.edu/seminars/no-signaling-proofs-their-applications-and-their-power, 1
-https://acoi.ics.uci.edu/seminars/nonlinear-regression-via-convex-programming, 1
-https://acoi.ics.uci.edu/seminars/optimization-techniques-for-complex-energy-infrastructure-systems, 1
-https://acoi.ics.uci.edu/seminars/sample-efficient-distribution-testing-using-centralized-or-distributed-computation, 1
-https://acoi.ics.uci.edu/seminars/solving-an-ill-posed-inverse-problem-of-three-dimensional-3d-vision, 1
-https://acoi.ics.uci.edu/seminars/sparse-polynomial-approximations-and-their-applications-to-quantum-advantage-parallel-computation-and-pseudorandomness, 1
-https://acoi.ics.uci.edu/seminars/statistical-estimation-with-strategic-data-holders, 1
-https://acoi.ics.uci.edu/seminars/strategyproof-exposing-mechanisms-descriptions, 1
-https://acoi.ics.uci.edu/seminars/tba, 1
-https://acoi.ics.uci.edu/seminars/the-edgeworth-conjecture-with-small-coalitions-and-approximate-equilibria-in-large-economies, 1
-https://acoi.ics.uci.edu/seminars/the-subspace-flatness-conjecture-and-faster-integer-programming, 1
-https://acoi.ics.uci.edu/seminars/universal-graphs-and-adjacency-labeling, 1
-https://acoi.ics.uci.edu/seminars/when-matching-meets-batching-optimal-multi-stage-algorithms-and-applications, 1
-https://code.ics.uci.edu/students, 1
-https://code.ics.uci.edu/students/career-services-overview, 1
-https://cs.ics.uci.edu/special-events/distinguished-lecture-series, 1
-https://cs.uci.edu/events/seminar-series, 1
-https://ics.uci.edu/event/bayesian-smoothing-and-feature-selection-via-variational-automatic-relevance-determination, 1
-https://ics.uci.edu/event/bayesian-smoothing-and-feature-selection-via-variational-automatic-relevance-determination/?ical=1, 1
-https://ics.uci.edu/event/hall-of-fame-2025, 1
-https://ics.uci.edu/event/hall-of-fame-2025/?ical=1, 1
-https://ics.uci.edu/events/list/?tribe__ecp_custom_46%5B0%5D=Computer+Science, 1
-https://ics.uci.edu/events/list/?tribe__ecp_custom_81%5B0%5D=Computer+Science, 1
-https://mcs.ics.uci.edu, 1
-https://mds.ics.uci.edu, 1
-https://mds.ics.uci.edu/academics, 1
-https://mhcid.ics.uci.edu, 1
-https://mhcid.ics.uci.edu/curriculum, 1
-https://mhcid.ics.uci.edu/homepage/about-the-program, 1
-https://mhcid.ics.uci.edu/homepage/curriculum, 1
-https://mhcid.ics.uci.edu/information-sessions, 1
-https://wiki.ics.uci.edu, 1
-https://wiki.ics.uci.edu/doku.php/projects:maint-winter-2021, 1
-https://www.cs.uci.edu/events/distinguished-lecture-series, 1
-https://www.ics.uci.edu/~jutts, 1
-https://www.stat.uci.edu, 1
-https://www.stat.uci.edu/faculty, 1
-https://www.stat.uci.edu/faculty/hengrui-cai, 1
-https://www.stat.uci.edu/m-s-ph-d-in-statistics, 1
-https://www.stat.uci.edu/slider/uci-launches-new-professional-program-master-of-data-science, 1
+cbcl.ics.uci.edu, 5
+cert.ics.uci.edu, 7
+cml.ics.uci.edu, 4
+code.ics.uci.edu, 1
+cs.uci.edu, 1
+fr.ics.uci.edu, 3
+hobbes.ics.uci.edu, 4
+ics.uci.edu, 17
+ipubmed.ics.uci.edu, 1
+isg.ics.uci.edu, 17
+luci.ics.uci.edu, 4
+mailman.ics.uci.edu, 14
+mcs.ics.uci.edu, 2
+mds.ics.uci.edu, 3
+mhcid.ics.uci.edu, 5
+motifmap.ics.uci.edu, 2
+nalini.ics.uci.edu, 1
+www.ics.uci.edu, 21
+www.stat.uci.edu, 2

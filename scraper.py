@@ -145,7 +145,7 @@ def extract_next_links(url, resp):
             domain = urlparse(resp.url).netloc.lower()
             if domain.endswith("uci.edu"):
                 # subdomain_page_sets[domain].add(clean_url)
-                rep.updatesubdomains(clean_url)
+                rep.updatesubdomains(domain, clean_url)
 
             # global pages_since_report
             # pages_since_report += 1
@@ -221,8 +221,8 @@ def is_valid(url):
         domain = parsed.netloc.lower()
         path = parsed.path or '/'
 
-        if domain == "grape.ics.uci.edu":
-            return False
+        # if domain == "grape.ics.uci.edu":
+        #     return False
 
         valid_domain = (
         domain.endswith("ics.uci.edu")
