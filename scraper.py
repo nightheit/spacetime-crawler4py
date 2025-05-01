@@ -5,15 +5,32 @@ from helpers import is_too_similar, tokenize, computeWordFrequencies, stop_words
 from collections import Counter, defaultdict
 import shelve
 import atexit
+from report import Report
+import pickle
+import os
 
-unique_pages = set()
-global_word_freq = Counter()
-subdomain_page_sets = defaultdict(set)
-longest_page = {
-    "url":    None,
-    "length": 0
-}
-pages_since_report = 0
+# unique_pages = set()
+# global_word_freq = Counter()
+# subdomain_page_sets = defaultdict(set)
+# longest_page = {
+#     "url":    None,
+#     "length": 0
+# }
+# pages_since_report = 0
+
+def pickle_dump(repo):
+    with open('report.pkl', 'wb') as file:
+        pickle.dump(repo, file)
+
+def pickle_load():
+    with open('report.pkl', 'rb') as file:
+        return pickle.load(file)
+
+if os.path.exists("report.pkl"):
+    rep = pickle_load()
+else:
+    rep = Report()
+
 
 already_visited = set()
 blacklisted_tags = {
@@ -43,23 +60,25 @@ blacklisted_tags = {
 
 crawler_report_statistics = "crawler_report_stats.db"
 
-def load_crawler_stats():
-    global unique_pages, global_word_freq, longest_page, pages_since_report, subdomain_page_sets
-    with shelve.open(crawler_report_statistics) as db:
-        unique_pages       = db.get("unique_pages", set())
-        global_word_freq   = db.get("global_word_freq", Counter())
-        longest_page       = db.get("longest_page", {"url": None, "length": 0})
-        pages_since_report = db.get("pages_since_report", 0)
-        subdomain_page_sets = db.get("subdomain_page_sets", defaultdict(set))
+# def load_crawler_stats():
+#     global unique_pages, global_word_freq, longest_page, pages_since_report, subdomain_page_sets
+#     with shelve.open(crawler_report_statistics) as db:
+#         unique_pages       = db.get("unique_pages", set())
+#         global_word_freq   = db.get("global_word_freq", Counter())
+#         longest_page       = db.get("longest_page", {"url": None, "length": 0})
+#         pages_since_report = db.get("pages_since_report", 0)
+#         subdomain_page_sets = db.get("subdomain_page_sets", defaultdict(set))
 
 
-def record_crawler_stats():
-    with shelve.open(crawler_report_statistics) as db:
-        db["unique_pages"]       = unique_pages
-        db["global_word_freq"]   = global_word_freq
-        db["longest_page"]       = longest_page
-        db["pages_since_report"] = pages_since_report
-        db["subdomain_page_sets"] = subdomain_page_sets
+# def record_crawler_stats():
+#     with shelve.open(crawler_report_statistics) as db:
+#         db["unique_pages"]       = unique_pages
+#         db["global_word_freq"]   = global_word_freq
+#         db["longest_page"]       = longest_page
+#         db["pages_since_report"] = pages_since_report
+#         db["subdomain_page_sets"] = subdomain_page_sets
+
+
 
 def scraper(url, resp):
     links = extract_next_links(url, resp)
@@ -111,31 +130,38 @@ def extract_next_links(url, resp):
         informational_value = len(token_dict) / len(tokens)
         if informational_value >= 0.1:
             clean_url, _ = urldefrag(resp.url)
-            unique_pages.add(clean_url)
+            # unique_pages.add(clean_url)
+            rep.updateuniquepages(clean_url)
 
-            page_word_count = sum(token_dict.values())
-            if page_word_count > longest_page["length"]:
-                longest_page["length"] = page_word_count
-                longest_page["url"]    = clean_url
+            # page_word_count = sum(token_dict.values())
+            # if page_word_count > longest_page["length"]:
+            #     longest_page["length"] = page_word_count
+            #     longest_page["url"]    = clean_url
+            rep.updatelongestpage(text, clean_url)
 
-            global_word_freq.update(token_dict)
+            # global_word_freq.update(token_dict)
+            rep.updatemostcommonwords(text)
 
             domain = urlparse(resp.url).netloc.lower()
             if domain.endswith("uci.edu"):
-                subdomain_page_sets[domain].add(clean_url)
+                # subdomain_page_sets[domain].add(clean_url)
+                rep.updatesubdomains(clean_url)
 
-            global pages_since_report
-            pages_since_report += 1
+            # global pages_since_report
+            # pages_since_report += 1
 
             # attempt to save stats before a kill or error to save stats
             # allows us to keep up with frontier without having to force restart on every error
             # check if this works later ----------------------------------------------------------------------------------------
-            record_crawler_stats()
+            # record_crawler_stats()
+            pickle_dump(rep)
+            
 
-            print(pages_since_report)
-            if pages_since_report >= 10:
-                write_report()
-                pages_since_report = 0
+            # print(pages_since_report)
+            # if pages_since_report >= 10:
+            #     write_report()
+            #     pages_since_report = 0
+            rep.saveReport()
 
         all_a_tags = parsed_html.find_all("a", href=True)
         list_of_next_urls = []
@@ -150,36 +176,36 @@ def extract_next_links(url, resp):
         # remove potential duplicates to avoid unnecessary clutter
         list_of_next_urls = list(set(list_of_next_urls))
         return list_of_next_urls
-    except Exception:
+    except Exception as e:
         return []
 
-def write_report():
-    lines = []
-    lines.append(f"Total unique pages: {len(unique_pages)}\n")
-    lines.append(f"Longest page: {longest_page['url']} "
-                 f"({longest_page['length']} words)\n\n")
-    lines.append("Top 50 most common words:\n")
-    for word, freq in global_word_freq.most_common(50):
-        lines.append(f"{word}: {freq}\n")
-    lines.append("\nSubdomain counts:\n")
-    for subd in sorted(subdomain_page_sets):
-        lines.append(f"{subd}, {len(subdomain_page_sets[subd])}\n")
+# def write_report():
+#     lines = []
+#     lines.append(f"Total unique pages: {len(unique_pages)}\n")
+#     lines.append(f"Longest page: {longest_page['url']} "
+#                  f"({longest_page['length']} words)\n\n")
+#     lines.append("Top 50 most common words:\n")
+#     for word, freq in global_word_freq.most_common(50):
+#         lines.append(f"{word}: {freq}\n")
+#     lines.append("\nSubdomain counts:\n")
+#     for subd in sorted(subdomain_page_sets):
+#         lines.append(f"{subd}, {len(subdomain_page_sets[subd])}\n")
 
-    with open("crawl_report.txt", "w") as report:
-        report.writelines(lines)
+#     with open("crawl_report.txt", "w") as report:
+#         report.writelines(lines)
 
-    record_crawler_stats()
+#     record_crawler_stats()
 
-def reset_crawler_state():
-    global unique_pages, global_word_freq, subdomain_page_sets
-    global longest_page, pages_since_report, already_visited
+# def reset_crawler_state():
+#     global unique_pages, global_word_freq, subdomain_page_sets
+#     global longest_page, pages_since_report, already_visited
 
-    unique_pages.clear()
-    global_word_freq.clear()
-    subdomain_page_sets.clear()
-    longest_page.update({"url": None, "length": 0})
-    pages_since_report = 0
-    already_visited.clear()
+#     unique_pages.clear()
+#     global_word_freq.clear()
+#     subdomain_page_sets.clear()
+#     longest_page.update({"url": None, "length": 0})
+#     pages_since_report = 0
+#     already_visited.clear()
 
 def is_valid(url):
     # Decide whether to crawl this url or not. 
@@ -239,6 +265,7 @@ def is_valid(url):
         print ("TypeError for ", parsed)
         raise
 
-reset_crawler_state()
-load_crawler_stats()
-atexit.register(record_crawler_stats)
+# pickle_dump(rep)
+if os.path.exists("report.pkl"):
+    rep = pickle_load()
+# atexit.register(record_crawler_stats)
