@@ -83,7 +83,7 @@ def is_too_similar(url, tokens):
             curr_similar_fingerprints += 1
 
         # allow for at most 2 similar sites
-        if curr_similar_fingerprints >= 3:
+        if curr_similar_fingerprints >= 2:
             return curr_similar_fingerprints
         
     fingerprints_seen.append(fingerprint)

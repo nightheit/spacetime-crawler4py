@@ -3,7 +3,8 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urldefrag, parse_qs, urljoin
 from helpers import is_too_similar, tokenize, computeWordFrequencies, stop_words
 from collections import Counter, defaultdict
-from report import Report
+import shelve
+import atexit
 
 unique_pages = set()
 global_word_freq = Counter()
@@ -40,6 +41,26 @@ blacklisted_tags = {
     "embed"
 }
 
+crawler_report_statistics = "crawler_report_stats.db"
+
+def load_crawler_stats():
+    global unique_pages, global_word_freq, longest_page, pages_since_report, subdomain_page_sets
+    with shelve.open(crawler_report_statistics) as db:
+        unique_pages       = db.get("unique_pages", set())
+        global_word_freq   = db.get("global_word_freq", Counter())
+        longest_page       = db.get("longest_page", {"url": None, "length": 0})
+        pages_since_report = db.get("pages_since_report", 0)
+        subdomain_page_sets = db.get("subdomain_page_sets", defaultdict(set))
+
+
+def record_crawler_stats():
+    with shelve.open(crawler_report_statistics) as db:
+        db["unique_pages"]       = unique_pages
+        db["global_word_freq"]   = global_word_freq
+        db["longest_page"]       = longest_page
+        db["pages_since_report"] = pages_since_report
+        db["subdomain_page_sets"] = subdomain_page_sets
+
 def scraper(url, resp):
     links = extract_next_links(url, resp)
     # for link in links:
@@ -74,7 +95,7 @@ def extract_next_links(url, resp):
         token_dict = computeWordFrequencies(tokens)
 
         # skip pages with 200 status but no information
-        if len(token_dict) <= 20 or len(tokens) <= 50:
+        if len(token_dict) <= 10:
             return []
         
         # avoid sites with high link to token density to avoid gallery like sites
@@ -83,12 +104,12 @@ def extract_next_links(url, resp):
             return []
         
         # if the current text is similar to 3+ other fingerprints, dont add urls
-        if is_too_similar(url, tokens) >= 3:
+        if is_too_similar(url, tokens) >= 2:
             return []
         
         # only add text to report with token count to unique token ratio (informational value) 0.2 or higher
         informational_value = len(token_dict) / len(tokens)
-        if informational_value >= 0.2:
+        if informational_value >= 0.1:
             clean_url, _ = urldefrag(resp.url)
             unique_pages.add(clean_url)
 
@@ -105,8 +126,14 @@ def extract_next_links(url, resp):
 
             global pages_since_report
             pages_since_report += 1
+
+            # attempt to save stats before a kill or error to save stats
+            # allows us to keep up with frontier without having to force restart on every error
+            # check if this works later ----------------------------------------------------------------------------------------
+            record_crawler_stats()
+
             print(pages_since_report)
-            if pages_since_report >= 50:
+            if pages_since_report >= 10:
                 write_report()
                 pages_since_report = 0
 
@@ -123,11 +150,10 @@ def extract_next_links(url, resp):
         # remove potential duplicates to avoid unnecessary clutter
         list_of_next_urls = list(set(list_of_next_urls))
         return list_of_next_urls
-    except Exception as e:
-        print("General Exception", e.name)
+    except Exception:
         return []
 
-def write_report(): ############################################################################
+def write_report():
     lines = []
     lines.append(f"Total unique pages: {len(unique_pages)}\n")
     lines.append(f"Longest page: {longest_page['url']} "
@@ -141,6 +167,19 @@ def write_report(): ############################################################
 
     with open("crawl_report.txt", "w") as report:
         report.writelines(lines)
+
+    record_crawler_stats()
+
+def reset_crawler_state():
+    global unique_pages, global_word_freq, subdomain_page_sets
+    global longest_page, pages_since_report, already_visited
+
+    unique_pages.clear()
+    global_word_freq.clear()
+    subdomain_page_sets.clear()
+    longest_page.update({"url": None, "length": 0})
+    pages_since_report = 0
+    already_visited.clear()
 
 def is_valid(url):
     # Decide whether to crawl this url or not. 
@@ -168,22 +207,18 @@ def is_valid(url):
         )
 
         if not valid_domain:
-            # print("Invalid Domain",domain)
             return False
 
         if parsed.scheme not in set(["http", "https"]):
-            # print("Not HTTP")
             return False
         
         # do not include urls with filter query parameters to avoid infinite trap
         query_params = parse_qs(parsed.query)
         if any("filter" in query.lower() for query in query_params):
-            # print("FILTER")
             return False
         
         # dont allow urls with more than 2 query parameters, possible trap
         if parsed.query and parsed.query.count("&") > 2:
-            # print("Too many queries")
             return False
         
         # should be the last check
@@ -192,7 +227,7 @@ def is_valid(url):
             + r"|png|tiff?|mid|mp2|mp3|mp4"
             + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
             + r"|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names"
-            + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
+            + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso|img"
             + r"|epub|dll|cnf|tgz|sha1"
             + r"|thmx|mso|arff|rtf|jar|csv"
             + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower())):
@@ -203,3 +238,7 @@ def is_valid(url):
     except TypeError:
         print ("TypeError for ", parsed)
         raise
+
+reset_crawler_state()
+load_crawler_stats()
+atexit.register(record_crawler_stats)
