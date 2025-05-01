@@ -1,75 +1,102 @@
-Total unique pages: 114
+Total unique pages: 825
 Longest page: https://cml.ics.uci.edu/category/aiml (13513 words)
 
 Top 50 most common words:
-research -> 362
-data -> 348
-learning -> 302
-science -> 270
-uci -> 258
-computer -> 245
-will -> 243
-ics -> 229
-university -> 225
-bam -> 222
-ref_chr19 -> 222
-models -> 203
-systems -> 191
-s -> 177
-ai -> 165
-can -> 156
-information -> 155
-edu -> 148
-machine -> 146
-irvine -> 143
-list -> 133
-language -> 121
-professor -> 121
-pm -> 105
-california -> 101
-also -> 97
-students -> 95
-work -> 95
-bio -> 94
-student -> 94
-events -> 91
-lab -> 90
-view -> 89
-end -> 88
-time -> 88
-department -> 87
-model -> 87
-phd -> 87
-dbh -> 86
-d -> 85
-talk -> 82
-program -> 81
-award -> 80
-group -> 80
-edge -> 79
-isg -> 79
-applications -> 78
-uc -> 78
-t -> 77
-april -> 76
+data -> 2309
+dataset -> 1844
+uci -> 1736
+information -> 1600
+learning -> 1347
+computer -> 1217
+will -> 1181
+ics -> 1150
+science -> 1108
+s -> 1061
+research -> 990
+can -> 918
+software -> 867
+machine -> 859
+irvine -> 839
+using -> 780
+students -> 777
+pdf -> 767
+university -> 731
+time -> 716
+feature -> 708
+code -> 669
+project -> 664
+edu -> 655
+systems -> 649
+paper -> 639
+engineering -> 602
+uc -> 575
+features -> 567
+c -> 556
+datasets -> 543
+repository -> 534
+school -> 532
+one -> 530
+fowlkes -> 527
+based -> 524
+also -> 522
+used -> 517
+use -> 512
+models -> 509
+d -> 498
+year -> 496
+people -> 486
+program -> 479
+may -> 474
+events -> 470
+student -> 470
+new -> 467
+first -> 463
+system -> 458
 
 Subdomain counts:
+aiclub.ics.uci.edu, 1
+archive.ics.uci.edu, 177
+asterix.ics.uci.edu, 2
 cbcl.ics.uci.edu, 5
-cert.ics.uci.edu, 7
-cml.ics.uci.edu, 4
+cert.ics.uci.edu, 10
+cml.ics.uci.edu, 6
 code.ics.uci.edu, 1
+cs.ics.uci.edu, 3
 cs.uci.edu, 1
+cwicsocal18.ics.uci.edu, 3
+duttgroup.ics.uci.edu, 1
+dynamo.ics.uci.edu, 6
+flamingo.ics.uci.edu, 11
 fr.ics.uci.edu, 3
+frost.ics.uci.edu, 1
 hobbes.ics.uci.edu, 4
-ics.uci.edu, 17
+i-sensorium.ics.uci.edu, 5
+ics.uci.edu, 51
 ipubmed.ics.uci.edu, 1
-isg.ics.uci.edu, 17
+isg.ics.uci.edu, 18
 luci.ics.uci.edu, 4
 mailman.ics.uci.edu, 14
 mcs.ics.uci.edu, 2
+mdogucu.ics.uci.edu, 1
 mds.ics.uci.edu, 3
 mhcid.ics.uci.edu, 5
 motifmap.ics.uci.edu, 2
+mover.ics.uci.edu, 17
+mswe.ics.uci.edu, 4
 nalini.ics.uci.edu, 1
-www.ics.uci.edu, 21
-www.stat.uci.edu, 2
+ngs.ics.uci.edu, 1
+psearch.ics.uci.edu, 1
+sherlock.ics.uci.edu, 6
+sli.ics.uci.edu, 1
+stairs.ics.uci.edu, 3
+stat.uci.edu, 1
+statistics-stage.ics.uci.edu, 1
+studentcouncil.ics.uci.edu, 4
+transformativeplay.ics.uci.edu, 4
+tutors.ics.uci.edu, 1
+vision.ics.uci.edu, 95
+wics.ics.uci.edu, 31
+wiki.ics.uci.edu, 12
+www.ics.uci.edu, 266
+www.stat.uci.edu, 29
+xtune.ics.uci.edu, 6
