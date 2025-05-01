@@ -58,7 +58,7 @@ blacklisted_tags = {
     "embed"
 }
 
-crawler_report_statistics = "crawler_report_stats.db"
+# crawler_report_statistics = "crawler_report_stats.db"
 
 # def load_crawler_stats():
 #     global unique_pages, global_word_freq, longest_page, pages_since_report, subdomain_page_sets
